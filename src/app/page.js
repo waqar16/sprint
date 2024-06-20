@@ -61,6 +61,7 @@ export default function Home() {
           Clear
         </button>
       </form>
+
       {file && (
         <div style={{ marginBottom: '20px' }}>
           <h2>Selected Image</h2>
@@ -77,7 +78,7 @@ export default function Home() {
             <p><strong>Content Specifics:</strong> {response.attributes.content_specifics}</p>
             <p><strong>Technical Aspects:</strong> {response.attributes.technical_aspects}</p>
           </div>
-          <h2>Uploaded Images</h2>
+          <h2>Icons:</h2>
           <ul style={{ listStyleType: 'none', padding: 0 }}>
             {response.icons.map((item, index) => (
               <li key={index} style={{ margin: '10px 0' }}>
