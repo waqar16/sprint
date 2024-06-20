@@ -1,95 +1,95 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+import { useState } from "react";
+import axios from "axios";
 
 export default function Home() {
+  const [file, setFile] = useState(null);
+  const [response, setResponse] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const API_URL = "http://3.233.197.138/api/"
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("image", file);
+
+    setLoading(true);
+
+    try {
+      const res = await axios.post(
+        `${API_URL}app/uploadImage/`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      setResponse(res.data);
+    } catch (error) {
+      console.error("Error uploading image:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDownload = (url) => {
+    window.location.href = `${API_URL}app/downloadImage?url=${encodeURIComponent(
+      url
+    )}`;
+  };
+
+  const handleClear = () => {
+    setFile(null);
+    setResponse(null);
+  };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <div style={{ textAlign: 'center', padding: '20px' }}>
+      <h1 style={{ fontSize: '2rem', margin: '20px 0', color: '#333' }}>Icono</h1>
+      <form onSubmit={handleSubmit} style={{ marginBottom: '20px' }}>
+        <input type="file" onChange={handleFileChange} />
+        <button type="submit" disabled={loading} style={{ margin: '0 10px' }}>
+          {loading ? 'Uploading...' : 'Upload'}
+        </button>
+        <button type="button" onClick={handleClear}>
+          Clear
+        </button>
+      </form>
+      {file && (
+        <div style={{ marginBottom: '20px' }}>
+          <h2>Selected Image</h2>
+          <img src={URL.createObjectURL(file)} alt="Selected" style={{ maxWidth: '100%', height: '500px' }} />
         </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+      )}
+      {response && (
+        <div>
+          <h2>Attributes</h2>
+          <div>
+            <p><strong>Style:</strong> {response.attributes.style}</p>
+            <p><strong>Category:</strong> {response.attributes.category}</p>
+            <p><strong>Context:</strong> {response.attributes.context}</p>
+            <p><strong>Content Specifics:</strong> {response.attributes.content_specifics}</p>
+            <p><strong>Technical Aspects:</strong> {response.attributes.technical_aspects}</p>
+          </div>
+          <h2>Uploaded Images</h2>
+          <ul style={{ listStyleType: 'none', padding: 0 }}>
+            {response.icons.map((item, index) => (
+              <li key={index} style={{ margin: '10px 0' }}>
+                <img src={item.preview_url} alt={`Preview ${index}`} style={{ maxWidth: '100%', height: 'auto' }} />
+                <button onClick={() => handleDownload(item.download_url)} style={{ margin: '10px' }}>
+                  Download
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
   );
 }
