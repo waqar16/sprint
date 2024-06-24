@@ -7,7 +7,7 @@ export default function Home() {
   const [response, setResponse] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const API_URL = "http://3.233.197.138/api/"
+  const API_URL = "http://3.233.197.138/api/";
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -21,15 +21,11 @@ export default function Home() {
     setLoading(true);
 
     try {
-      const res = await axios.post(
-        `${API_URL}app/uploadImage/`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const res = await axios.post(`${API_URL}app/uploadImage/`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       setResponse(res.data);
     } catch (error) {
       console.error("Error uploading image:", error);
@@ -39,9 +35,11 @@ export default function Home() {
   };
 
   const handleDownload = (url) => {
-    window.location.href = `${API_URL}app/downloadImage?url=${encodeURIComponent(
-      url
-    )}`;
+    window.location.href = `${API_URL}app/downloadImage?url=${encodeURIComponent(url)}`;
+  };
+
+  const handleFreePikDownload = (id) => {
+    window.location.href = `${API_URL}app/downloadFreePik?id=${encodeURIComponent(id)}`;
   };
 
   const handleClear = () => {
@@ -78,17 +76,34 @@ export default function Home() {
             <p><strong>Content Specifics:</strong> {response.attributes.content_specifics}</p>
             <p><strong>Technical Aspects:</strong> {response.attributes.technical_aspects}</p>
           </div>
-          <h2>Icons:</h2>
-          <ul style={{ listStyleType: 'none', padding: 0 }}>
-            {response.icons.map((item, index) => (
-              <li key={index} style={{ margin: '10px 0' }}>
-                <img src={item.preview_url} alt={`Preview ${index}`} style={{ maxWidth: '100%', height: 'auto' }} />
-                <button onClick={() => handleDownload(item.download_url)} style={{ margin: '10px' }}>
-                  Download
-                </button>
-              </li>
-            ))}
-          </ul>
+          <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '20px' }}>
+            <div style={{ flex: 1, padding: '10px' }}>
+              <h2>Icons</h2>
+              <ul style={{ listStyleType: 'none', padding: 0 }}>
+                {response.icons.map((item, index) => (
+                  <li key={index} style={{ margin: '10px 0' }}>
+                    <img src={item.preview_url} alt={`Preview ${index}`} style={{ maxWidth: '100%', height: 'auto', border: '1px solid #ddd', borderRadius: '4px', padding: '5px' }} />
+                    <button onClick={() => handleDownload(item.download_url)} style={{ margin: '10px', padding: '10px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }} >
+                      Download
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div style={{ flex: 1, padding: '10px' }}>
+              <h2>FreePik Icons</h2>
+              <ul style={{ listStyleType: 'none', padding: 0 }}>
+                {response.f_icons.map((item, index) => (
+                  <li key={index} style={{ margin: '10px 0' }}>
+                    <img src={item.url} alt={`FreePik Icon ${index}`} style={{ maxWidth: '100%', height: 'auto', border: '1px solid #ddd', borderRadius: '4px', padding: '5px' }} />
+                    <button onClick={() => handleFreePikDownload(item.id)} style={{ margin: '10px', padding: '10px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+                      Download
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
       )}
     </div>
