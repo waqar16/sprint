@@ -39,9 +39,7 @@ const Details = () => {
     <div className="min-h-screen bg-gray-100 py-14">
       {/* Form */}
       <div className="w-[600px] mx-auto">
-        <h1 className="text-2xl font-bold text-center mb-4">
-          Fetch Data from URL
-        </h1>
+        <h1 className="text-2xl font-bold text-center mb-4">By Figma URL</h1>
         <form onSubmit={handleSubmit} className="mb-4">
           <label htmlFor="url-input" className="block mb-1 text-lg">
             URL:
@@ -55,7 +53,7 @@ const Details = () => {
             onChange={(e) => setUrl(e.target.value)}
             placeholder="Add Url..."
             required
-            className="text-xs border border-gray-300 rounded mb-4 w-full px-2 py-3"
+            className="text-xs  border border-gray-300 rounded mb-4 w-full px-2 py-3"
           />
 
           {/* buttons */}
